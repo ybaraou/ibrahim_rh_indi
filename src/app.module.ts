@@ -1,3 +1,19 @@
+import { SalaireModule } from './salaire/salaire.module';
+import { TransactionModule } from './transaction/transaction.module';
+import { ModePaiementModule } from './modepaiement/modepaiement.module';
+import { TypeEmployeModule } from './typeemploye/typeemploye.module';
+import { HistoriqueSalaireModule } from './historiquesalaire/historiquesalaire.module';
+import { PresenceModule } from './presence/presence.module';
+import { DepartementModule } from './departement/departement.module';
+import { EvaluationModule } from './evaluation/evaluation.module';
+import { DocumentModule } from './document/document.module';
+import { CongeModule } from './conge/conge.module';
+import { PosteModule } from './poste/poste.module';
+import { EmployeModule } from './employe/employe.module';
+import { PermissionModule } from './permission/permission.module';
+import { RoletoPermissionModule } from './roletopermission/roletopermission.module';
+import { RoleModule } from './role/role.module';
+import { GestionLogModule } from './gestionlog/gestionlog.module';
 import { LoggingInterceptor } from './logger/logger.interceptor';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { PrismaModule } from './prisma/prisma.module';
@@ -16,6 +32,22 @@ import { configurationSchema } from './config/config.validation';
 
 @Module({
   imports: [
+    SalaireModule,
+    TransactionModule,
+    ModePaiementModule,
+    TypeEmployeModule,
+    HistoriqueSalaireModule,
+    PresenceModule,
+    DepartementModule,
+    EvaluationModule,
+    DocumentModule,
+    CongeModule,
+    PosteModule,
+    EmployeModule,
+    PermissionModule,
+    RoletoPermissionModule,
+    RoleModule,
+    GestionLogModule,
     PrismaModule,
     ThrottlerModule.forRootAsync({
       imports: [ConfigModule],
