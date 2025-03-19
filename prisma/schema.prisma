@@ -55,20 +55,20 @@ model Employe {
   email             String
   telephone         String
   date_naissance    DateTime
-  poste             Poste               @relation(fields: [posteId], references: [id])
-  posteId           String              @db.ObjectId
-  role              Role                @relation(fields: [roleId], references: [id])
-  roleId            String              @db.ObjectId
-  typeEmploye       TypeEmploye         @relation(fields: [typeEmployeId], references: [id])
-  typeEmployeId     String              @db.ObjectId
+  poste             Poste?              @relation(fields: [posteId], references: [id])
+  posteId           String?             @db.ObjectId
+  role              Role?               @relation(fields: [roleId], references: [id])
+  roleId            String?             @db.ObjectId
+  typeEmploye       TypeEmploye?        @relation(fields: [typeEmployeId], references: [id])
+  typeEmployeId     String?             @db.ObjectId
   salaire           Int
   conges            Conge[]
   historiquesalaire HistoriqueSalaire[]
   evaluations       Evaluation[]
   presences         Presence[]
   dateEmbauche      DateTime
-  departement       Departement         @relation(fields: [departementId], references: [id])
-  departementId     String              @db.ObjectId
+  departement       Departement?        @relation(fields: [departementId], references: [id])
+  departementId     String?             @db.ObjectId
   status            EMPLOYE_STATUS
   password          String
   token             String
@@ -84,13 +84,13 @@ model Employe {
 }
 
 model Poste {
-  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
   nom           String
-  departement   Departement @relation(fields: [departementId], references: [id])
-  departementId String      @db.ObjectId
+  departement   Departement? @relation(fields: [departementId], references: [id])
+  departementId String?      @db.ObjectId
   employes      Employe[]
-  createdAt     DateTime    @default(now()) @map("created_at")
-  updatedAt     DateTime    @updatedAt @map("updated_at")
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
 }
 
 model Conge {
@@ -131,8 +131,8 @@ model Evaluation {
 
 model Departement {
   id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  responsable   Employe   @relation(name: "responsableDepartement", fields: [responsableId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  responsableId String    @unique @db.ObjectId
+  responsable   Employe?  @relation(name: "responsableDepartement", fields: [responsableId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  responsableId String?   @unique @db.ObjectId
   employes      Employe[] //add relation name
   name          String
 
