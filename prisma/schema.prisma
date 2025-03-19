@@ -7,11 +7,240 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Users {
+model GestionLog {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  username  String?
-  email     String   @unique
-  password  String
+  labelle   String
+  action    String
+  employe   Employe  @relation(fields: [employeId], references: [id])
+  employeId String   @db.ObjectId
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+}
+
+model Role {
+  id               String             @id @default(auto()) @map("_id") @db.ObjectId
+  codeRole         String
+  nameRole         String
+  roleToPermission RoletoPermission[]
+  createdAt        DateTime           @default(now()) @map("created_at")
+  updatedAt        DateTime           @updatedAt @map("updated_at")
+  employes         Employe[]
+}
+
+model RoletoPermission {
+  id             String     @id @default(auto()) @map("_id") @db.ObjectId
+  role           Role       @relation(fields: [roleId], references: [id])
+  roleId         String     @db.ObjectId
+  permission     Permission @relation(fields: [permissionId], references: [id])
+  permissionId   String     @db.ObjectId
+  codePermission String
+  createdAt      DateTime   @default(now()) @map("created_at")
+  updatedAt      DateTime   @updatedAt @map("updated_at")
+}
+
+model Permission {
+  id               String             @id @default(auto()) @map("_id") @db.ObjectId
+  codePermission   String
+  namePermission   String
+  group            String
+  roleToPermission RoletoPermission[]
+  createdAt        DateTime           @default(now()) @map("created_at")
+  updatedAt        DateTime           @updatedAt @map("updated_at")
+}
+
+model Employe {
+  id                String              @id @default(auto()) @map("_id") @db.ObjectId
+  nom               String
+  prenom            String
+  email             String
+  telephone         String
+  date_naissance    DateTime
+  poste             Poste               @relation(fields: [posteId], references: [id])
+  posteId           String              @db.ObjectId
+  role              Role                @relation(fields: [roleId], references: [id])
+  roleId            String              @db.ObjectId
+  typeEmploye       TypeEmploye         @relation(fields: [typeEmployeId], references: [id])
+  typeEmployeId     String              @db.ObjectId
+  salaire           Int
+  conges            Conge[]
+  historiquesalaire HistoriqueSalaire[]
+  evaluations       Evaluation[]
+  presences         Presence[]
+  dateEmbauche      DateTime
+  departement       Departement         @relation(fields: [departementId], references: [id])
+  departementId     String              @db.ObjectId
+  status            EMPLOYE_STATUS
+  password          String
+  token             String
+
+  createdAt                DateTime      @default(now()) @map("created_at")
+  updatedAt                DateTime      @updatedAt @map("updated_at")
+  gestionlogs              GestionLog[]
+  documents                Document[]
+  transactionsEffectuer    Transaction[]
+  salaires                 Salaire[]
+  responsableInDepartement Departement?  @relation(name: "responsableDepartement")
+  transactionsRecu         Transaction[] @relation(name: "TransactionBeneficiaire")
+}
+
+model Poste {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  nom           String
+  departement   Departement @relation(fields: [departementId], references: [id])
+  departementId String      @db.ObjectId
+  employes      Employe[]
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+}
+
+model Conge {
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
+  employe   Employe       @relation(fields: [employeId], references: [id])
+  employeId String        @db.ObjectId
+  dateDebut DateTime
+  dateFin   DateTime
+  status    CONGES_STATUS
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+}
+
+model Document {
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  employe    Employe @relation(fields: [employeId], references: [id])
+  employeId  String  @db.ObjectId
+  nom        String
+  urlFichier String
+
+  status    DOCUMENT_STATUS
+  createdAt DateTime        @default(now()) @map("created_at")
+  updatedAt DateTime        @updatedAt @map("updated_at")
+}
+
+model Evaluation {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  employe     Employe  @relation(fields: [employeId], references: [id])
+  employeId   String   @db.ObjectId
+  date        DateTime
+  commentaire String
+  deductions  Int
+  note        Int
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+}
+
+model Departement {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  responsable   Employe   @relation(name: "responsableDepartement", fields: [responsableId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  responsableId String    @unique @db.ObjectId
+  employes      Employe[] //add relation name
+  name          String
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  postes    Poste[]
+}
+
+model Presence {
+  id           String          @id @default(auto()) @map("_id") @db.ObjectId
+  employe      Employe         @relation(fields: [employeId], references: [id])
+  employeId    String          @db.ObjectId
+  date         String
+  heureArrivee String
+  heureDepart  String
+  status       PRESENCE_STATUS
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+}
+
+model HistoriqueSalaire {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  employe   Employe  @relation(fields: [employeId], references: [id])
+  employeId String   @db.ObjectId
+  date      DateTime
+  montant   Int
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+}
+
+model TypeEmploye {
+  id       String    @id @default(auto()) @map("_id") @db.ObjectId
+  employes Employe[]
+  nom      String
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+}
+
+model ModePaiement {
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  transactions Transaction[]
+  code         String
+  name         String
+  status       Boolean
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+}
+
+model Transaction {
+  id             String             @id @default(auto()) @map("_id") @db.ObjectId
+  libelle        String
+  montant        Int
+  modePaiement   ModePaiement       @relation(fields: [modePaiementId], references: [id])
+  modePaiementId String             @db.ObjectId
+  recuPar        Employe            @relation(name: "TransactionBeneficiaire", fields: [recuParId], references: [id])
+  recuParId      String             @db.ObjectId
+  envoyerPar     Employe            @relation(fields: [envoyerParId], references: [id])
+  envoyerParId   String             @db.ObjectId
+  status         TRANSACTION_STATUS
+  createdAt      DateTime           @default(now()) @map("created_at")
+  updatedAt      DateTime           @updatedAt @map("updated_at")
+}
+
+model Salaire {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  employe     Employe @relation(fields: [employeId], references: [id])
+  employeId   String  @db.ObjectId
+  salaireBrut Int
+  deductions  Int
+  salaireNet  Int
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+}
+
+enum EMPLOYE_STATUS {
+  ACTIF
+  INACTIF
+  CONGE
+}
+
+enum CONGES_STATUS {
+  EN_ATTENTE
+  APPROUVE
+  REJETE
+}
+
+enum DOCUMENT_STATUS {
+  CONTRAT
+  CV
+  DIPLOME
+  ATTESTATION
+  CNI
+  AUTRE
+}
+
+enum PRESENCE_STATUS {
+  PRESENT
+  RETARD
+  ABSENT
+}
+
+enum TRANSACTION_STATUS {
+  EN_ATTENTE
+  REUSSI
+  ECHEC
 }
