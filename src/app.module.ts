@@ -15,7 +15,8 @@ import configuration from './config/configuration';
 import { configurationSchema } from './config/config.validation';
 
 @Module({
-  imports: [PrismaModule,
+  imports: [
+    PrismaModule,
     ThrottlerModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -29,19 +30,21 @@ import { configurationSchema } from './config/config.validation';
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configuration],
-            validationSchema: configurationSchema,
-
+      validationSchema: configurationSchema,
     }),
-],
+  ],
   controllers: [AppController],
-  providers: [ {
-  provide: APP_INTERCEPTOR,
-  useClass: LoggingInterceptor,
-},
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+    },
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
-    },AppService],
+    },
+    AppService,
+  ],
 })
 export class AppModule {}
