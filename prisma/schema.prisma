@@ -79,7 +79,7 @@ model Employe {
   documents                Document[]
   transactionsEffectuer    Transaction[]
   salaires                 Salaire[]
-  responsableInDepartement Departement?  @relation(name: "responsableDepartement")
+  responsableInDepartement Departement[] @relation(name: "responsableDepartement")
   transactionsRecu         Transaction[] @relation(name: "TransactionBeneficiaire")
 }
 
@@ -132,7 +132,7 @@ model Evaluation {
 model Departement {
   id            String    @id @default(auto()) @map("_id") @db.ObjectId
   responsable   Employe?  @relation(name: "responsableDepartement", fields: [responsableId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  responsableId String?   @unique @db.ObjectId
+  responsableId String?   @db.ObjectId
   employes      Employe[] //add relation name
   name          String
 
